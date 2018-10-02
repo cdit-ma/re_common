@@ -1,0 +1,71 @@
+syntax="proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package AggServer;
+
+/// Request/Response messages
+message PortLifecycleRequest {
+    repeated google.protobuf.Timestamp time_interval = 1;
+    repeated string port_paths = 2; // filter results by expected ports
+    repeated string component_instance_paths = 3; // filter results by expected
+    repeated string component_names = 4;
+
+}
+
+message PortLifecycleResponse {
+    repeated PortLifecycleEvent events = 1;
+}
+
+///Event messages
+message PortLifecycleEvent {
+    
+    Port port = 1;
+    LifecycleType type = 2;
+    google.protobuf.Timestamp time = 3;
+}
+
+
+/// Event enums
+enum LifecycleType {
+    NO_TYPE = 0;
+    CONFIGURE = 1;
+    ACTIVATE = 2;
+    PASSIVATE = 3;
+    TERMINATE = 4;
+}
+
+
+/// Model structure Messages
+message Port {
+    enum Kind {
+        NO_KIND = 0;
+        PERIODIC = 1;
+        PUBLISHER = 2;
+        SUBSCRIBER = 3;
+        REQUESTER = 4;
+        REPLIER = 5;
+    }
+    string path = 1;
+    ComponentInstance component_instance = 2;
+    string name = 3;
+    string kind = 4;
+    string middleware = 5;
+}
+
+message ComponentInstance {
+    Component component = 1;
+    Node node = 2;
+    string name = 3;
+    string path = 4;
+}
+
+
+message Component {
+    string name = 1;
+}
+
+message Node {
+    string hostname = 1;
+    string ip = 2;
+}

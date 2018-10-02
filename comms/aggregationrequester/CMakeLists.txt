@@ -35,8 +35,7 @@ target_include_directories(${PROJ_NAME} PRIVATE ${RE_COMMON_SOURCE_DIR})
 target_include_directories(${LIB_NAME} PRIVATE ${RE_COMMON_SOURCE_DIR})
 target_include_directories(${PROJ_NAME} PRIVATE ${Boost_INCLUDE_DIRS})
 
-#target_link_libraries(${LIB_NAME} re_common_proto_environmentcontrol)
-#target_link_libraries(${LIB_NAME} re_common_proto_control)
+target_link_libraries(${LIB_NAME} re_common_proto_aggregation_message)
 target_link_libraries(${LIB_NAME} zmq_protorequester)
 
 target_link_libraries(${PROJ_NAME} ${LIB_NAME})
