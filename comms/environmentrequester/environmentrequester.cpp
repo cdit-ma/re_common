@@ -3,6 +3,7 @@
 #include <proto/controlmessage/controlmessage.pb.h>
 #include <zmq/protorequester/protorequester.hpp>
 #include <sstream>
+#include <iostream>
 
 std::unique_ptr<NodeManager::NodeManagerRegistrationReply>
 EnvironmentRequest::TryRegisterNodeManager(const std::string& environment_manager_endpoint, const std::string& experiment_name, const std::string& node_ip_address){
@@ -86,6 +87,13 @@ void EnvironmentRequest::HeartbeatRequester::Terminate() {
     if(heartbeater_){
         heartbeater_->Terminate();
         heartbeater_.reset();
+    }
+}
+
+void EnvironmentRequest::HeartbeatRequester::SetTimeoutCallback(std::function<void (void)> timeout_func){
+    std::lock_guard<std::mutex> lock(heartbeater_mutex_);
+    if(heartbeater_){
+        heartbeater_->SetTimeoutCallback(timeout_func);
     }
 }
 
