@@ -1,12 +1,9 @@
-cmake_minimum_required (VERSION 2.6)
-
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS true)
 
 #Set our project names
 set(PROJ_NAME re_common_proto_aggregation_message)
+project(${PROJ_NAME})
+
+find_package(Protobuf REQUIRED)
 
 if(NOT PROTOBUF_FOUND)
 	# Find package Protobuf
@@ -15,11 +12,13 @@ endif()
 
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${CMAKE_CURRENT_SOURCE_DIR}/aggregationmessage.proto)
 
-add_library(${PROJ_NAME} SHARED ${PROTO_SRCS} ${SOURCE} ${PROTO_HDRS} ${HEADERS})
+add_library(${PROJ_NAME} STATIC ${SOURCE} ${HEADERS} ${PROTO_SRCS} ${PROTO_HDRS})
 
-target_include_directories(${PROJ_NAME} PRIVATE ${RE_SRC_PATH})
-target_include_directories(${PROJ_NAME} PRIVATE ${PROTOBUF_INCLUDE_DIRS})
-target_include_directories(${PROJ_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+# Include Directories
+target_include_directories(${PROJ_NAME} PUBLIC ${PROTOBUF_INCLUDE_DIRS})
+target_include_directories(${PROJ_NAME} PUBLIC ${RE_COMMON_SOURCE_DIR})
+target_include_directories(${PROJ_NAME} PUBLIC ${RE_COMMON_BINARY_DIR})
+
 
 if (MSVC)
 	#Windows requires protobuf in DLLs
@@ -28,5 +27,5 @@ if (MSVC)
 	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
 endif()
 
-#Link against protobuf
-target_link_libraries(${PROJ_NAME} ${PROTOBUF_LIBRARIES})
+# Link Libraries 
+target_link_libraries(${PROJ_NAME} PUBLIC ${PROTOBUF_LIBRARIES})
