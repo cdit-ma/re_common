@@ -49,7 +49,7 @@ message Port {
     string path = 1;
     ComponentInstance component_instance = 2;
     string name = 3;
-    string kind = 4;
+    Kind kind = 4;
     string middleware = 5;
 }
 
