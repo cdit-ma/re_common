@@ -14,6 +14,7 @@ namespace EnvironmentManager{
             void ShutdownExperiment(const std::string& experiment_name);
             std::unique_ptr<NodeManager::RegisterExperimentReply> AddExperiment(const std::string& experiment_name, const std::string& graphml_path);
             std::vector<std::string> ListExperiments();
+            std::string InspectExperiment(const std::string& experiment_name);
         private:
             zmq::ProtoRequester requester_;
     };
