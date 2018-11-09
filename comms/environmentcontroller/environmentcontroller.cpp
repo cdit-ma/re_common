@@ -1,6 +1,7 @@
 #include "environmentcontroller.h"
 #include <proto/environmentcontrol/environmentcontrol.pb.h>
 #include <util/graphmlparser/protobufmodelparser.h>
+#include <google/protobuf/util/json_util.h>
 
 EnvironmentManager::EnvironmentController::EnvironmentController(const std::string& environment_manager_endpoint):
     requester_(environment_manager_endpoint)
@@ -20,9 +21,14 @@ std::unique_ptr<NodeManager::RegisterExperimentReply> EnvironmentManager::Enviro
 
     RegisterExperimentRequest request;
     request.mutable_id()->set_experiment_name(experiment_name);
-
-    ProtobufModelParser parser(graphml_path, experiment_name);
-    request.set_allocated_control_message(parser.ControlMessage());
+    try{
+        auto experiment = ProtobufModelParser::ParseModel(graphml_path, experiment_name);
+        if(experiment){
+            request.set_allocated_experiment(experiment.release());
+        }
+    }catch(const std::exception& ex){
+        throw;
+    }
 
     auto reply = requester_.SendRequest<RegisterExperimentRequest, RegisterExperimentReply>("RegisterExperiment", request, 5000);
     return reply.get();
@@ -36,3 +42,30 @@ std::vector<std::string> EnvironmentManager::EnvironmentController::ListExperime
     const auto& experiment_names = experiment_pb->experiment_names();
     return {experiment_names.begin(), experiment_names.end()};
 }
+
+std::string EnvironmentManager::EnvironmentController::InspectExperiment(const std::string &experiment_name) {
+    using namespace EnvironmentControl;
+
+    NodeManager::InspectExperimentRequest request;
+    request.set_experiment_name(experiment_name);
+    auto reply = requester_.SendRequest<NodeManager::InspectExperimentRequest, NodeManager::InspectExperimentReply>("InspectExperiment", request, 1000);
+
+    try{
+        auto experiment_pb = reply.get();
+        std::string output;
+
+        google::protobuf::util::JsonPrintOptions options;
+        options.add_whitespace = true;
+        options.always_print_primitive_fields = false;
+        google::protobuf::util::MessageToJsonString(*experiment_pb, &output, options);
+
+        return output;
+    }catch(const zmq::RMIException& ex){
+        throw std::invalid_argument(ex.what());
+    }catch(const zmq::TimeoutException& ex){
+        throw std::runtime_error(ex.what());
+    }
+
+}
+
+
