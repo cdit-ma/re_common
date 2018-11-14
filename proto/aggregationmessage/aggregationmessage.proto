@@ -51,21 +51,36 @@ message Port {
     string name = 3;
     Kind kind = 4;
     string middleware = 5;
+    string graphml_id = 6;
 }
 
 message ComponentInstance {
     Component component = 1;
-    Node node = 2;
+    Container container = 2;
     string name = 3;
     string path = 4;
+    string graphml_id = 5;
 }
 
 
 message Component {
     string name = 1;
+    string graphml_id = 2;
+}
+
+message Container {
+    enum ContainerType {
+        GENERIC = 0;
+        DOCKER = 1;
+    }
+    string name = 1;
+    ContainerType type = 2;
+    Node node = 3;
+    string graphml_id = 4;
 }
 
 message Node {
     string hostname = 1;
     string ip = 2;
+    string graphml_id = 3;
 }
