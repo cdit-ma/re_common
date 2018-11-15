@@ -17,6 +17,29 @@ message PortLifecycleResponse {
     repeated PortLifecycleEvent events = 1;
 }
 
+
+message WorkloadRequest {
+    repeated google.protobuf.Timestamp time_interval = 1;
+    repeated string worker_paths = 2; // filter results by expected ports
+    repeated string component_instance_paths = 3; // filter results by expected
+    repeated string component_names = 4;
+
+}
+
+message WorkloadResponse {
+    repeated WorkloadEvent events = 1;
+}
+
+
+message CPUUtilisationRequest {
+    repeated google.protobuf.Timestamp time_interval = 1;
+    repeated string node_ids = 2;
+}
+
+message CPUUtilisationResponse {
+    repeated CPUUtilisationEvent events = 1;
+}
+
 ///Event messages
 message PortLifecycleEvent {
     
@@ -25,6 +48,30 @@ message PortLifecycleEvent {
     google.protobuf.Timestamp time = 3;
 }
 
+message WorkloadEvent {
+    enum WorkloadEventType {
+        STARTED = 0;
+        FINISHED = 1;
+        MESSAGE = 2;
+        WARNING = 3;
+        ERROR = 4;
+    }
+
+    WorkerInstance worker_inst = 1;
+    WorkloadEventType type = 2;
+    uint32 workload_id = 3;
+    google.protobuf.Timestamp time = 4;
+
+    string function_name = 5;            //Workers Function Name
+    string args = 6;
+    uint32 log_level = 7;
+}
+
+message CPUUtilisationEvent {
+    Node node = 1;
+    double cpu_utilisation = 2;
+    google.protobuf.Timestamp time = 3;
+}
 
 /// Event enums
 enum LifecycleType {
@@ -47,11 +94,18 @@ message Port {
         REPLIER = 5;
     }
     string path = 1;
-    ComponentInstance component_instance = 2;
+    //ComponentInstance component_instance = 2;
     string name = 3;
     Kind kind = 4;
     string middleware = 5;
-    string graphml_id = 6;
+    string graphml_id = 6; 
+}
+
+message WorkerInstance {
+    
+    string name = 1;
+    string path = 2;
+    string grpahml_id = 3;
 }
 
 message ComponentInstance {
