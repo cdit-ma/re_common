@@ -12,6 +12,7 @@ namespace AggServer{
         public:
             Requester(const std::string& aggregation_broker_endpoint);
             std::unique_ptr<AggServer::PortLifecycleResponse> GetPortLifecycle(const AggServer::PortLifecycleRequest& request);
+            std::unique_ptr<AggServer::WorkloadResponse> GetWorkload(const AggServer::WorkloadRequest& request);
         private:
             zmq::ProtoRequester requester_;
     };
