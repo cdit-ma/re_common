@@ -52,6 +52,7 @@ message WorkloadResponse {
 message CPUUtilisationRequest {
     repeated google.protobuf.Timestamp time_interval = 1;
     repeated string node_ids = 2;
+    uint32 experiment_run_id = 3;
 }
 message CPUUtilisationResponse {
     repeated CPUUtilisationEvent events = 1;
