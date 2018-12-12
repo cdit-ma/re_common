@@ -14,6 +14,7 @@ class Requester
 public:
     Requester(const std::string& aggregation_broker_endpoint);
     std::unique_ptr<AggServer::ExperimentRunResponse> GetExperimentRuns(const AggServer::ExperimentRunRequest& request);
+    std::unique_ptr<AggServer::ExperimentStateResponse> GetExperimentState(const AggServer::ExperimentStateRequest& request);
     std::unique_ptr<AggServer::PortLifecycleResponse> GetPortLifecycle(const AggServer::PortLifecycleRequest& request);
     std::unique_ptr<AggServer::WorkloadResponse> GetWorkload(const AggServer::WorkloadRequest& request);
     std::unique_ptr<AggServer::CPUUtilisationResponse> GetCPUUtilisation(const AggServer::CPUUtilisationRequest& request);
