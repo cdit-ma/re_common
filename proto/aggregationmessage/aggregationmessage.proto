@@ -59,6 +59,16 @@ message CPUUtilisationResponse {
     repeated CPUUtilisationNode nodes = 2;
 }
 
+message MemoryUtilisationRequest {
+    repeated google.protobuf.Timestamp time_interval = 1;
+    repeated string node_ids = 2;
+    uint32 experiment_run_id = 3;
+}
+message MemoryUtilisationResponse {
+    //repeated CPUUtilisationEvent events = 1;
+    repeated MemoryUtilisationNode nodes = 2;
+}
+
 ///Event messages
 message PortLifecycleEvent {
     
@@ -93,6 +103,16 @@ message CPUUtilisationNode {
 message CPUUtilisationEvent {
     //Node node = 1;
     double cpu_utilisation = 2;
+    google.protobuf.Timestamp time = 3;
+}
+
+message MemoryUtilisationNode {
+    repeated MemoryUtilisationEvent events = 1;
+    Node node_info = 2;
+}
+message MemoryUtilisationEvent {
+    //Node node = 1;
+    double memory_utilisation = 2;
     google.protobuf.Timestamp time = 3;
 }
 
