@@ -190,12 +190,12 @@ message Container {
     ContainerType type = 2;
     //Node node = 3;
     string graphml_id = 4;
-    ComponentInstance component_instances = 5;
+    repeated ComponentInstance component_instances = 5;
 }
 
 message Node {
     string hostname = 1;
     string ip = 2;
     //string graphml_id = 3;
-    Container containers = 4;
+    repeated Container containers = 4;
 }
