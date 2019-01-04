@@ -1,5 +1,7 @@
 syntax="proto3";
 
+import "google/protobuf/timestamp.proto";
+
 package NodeManager;
 message ControlMessage{
     enum Type{
@@ -14,7 +16,7 @@ message ControlMessage{
     }
 
     Type type = 1;
-    double time_stamp = 2;
+    google.protobuf.Timestamp timestamp = 2;
     string host_name = 3;
     repeated Node nodes = 4;
     string experiment_id = 5;
@@ -98,6 +100,7 @@ message NodeManagerRegistrationReply{
     string heartbeat_endpoint = 2;
     string master_publisher_endpoint = 3;
     string master_registration_endpoint = 4;
+    string experiment_logger_endpoint = 5;
 }
 
 message NodeManagerDeregistrationRequest{
@@ -116,6 +119,8 @@ message HardwareId{
 
 message ContainerId{
     string id = 1;
+    bool is_master = 2;
+    bool is_docker = 3;
 }
 
 message NodeDeployment{
@@ -236,6 +241,7 @@ message Logger{
         MODEL = 1;
         CLIENT = 2;
         SERVER = 3;
+        EXPERIMENT = 4;
     }
     
     Type type = 1;
@@ -330,4 +336,17 @@ message InspectExperimentRequest{
 
 message InspectExperimentReply{
     EnvironmentMessage environment_message = 1;
+}
+
+message SlaveHeartbeatRequest{
+    enum Type{
+        HEARBEAT = 0;
+        END_HEARTBEAT = 1;
+    }
+    SlaveId id = 1;
+    Type type = 2;
+}
+
+message SlaveHeartbeatReply{
+
 }
