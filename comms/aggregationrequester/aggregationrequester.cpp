@@ -99,3 +99,21 @@ std::unique_ptr<AggServer::CPUUtilisationResponse> AggServer::Requester::GetCPUU
         throw std::runtime_error(ex.what());
     }
 }
+
+
+/**
+ * @brief AggServer::Requester::GetMemoryUtilisation
+ * @param request
+ * @return
+ */
+std::unique_ptr<AggServer::MemoryUtilisationResponse> AggServer::Requester::GetMemoryUtilisation(const AggServer::MemoryUtilisationRequest &request)
+{
+    auto reply = requester_.SendRequest<MemoryUtilisationRequest, MemoryUtilisationResponse>("GetMemoryUtilisation", request, 5000);
+    try{
+        return std::move(reply.get());
+    }catch(const zmq::RMIException& ex){
+        throw std::invalid_argument(ex.what());
+    }catch(const zmq::TimeoutException& ex){
+        throw std::runtime_error(ex.what());
+    }
+}
