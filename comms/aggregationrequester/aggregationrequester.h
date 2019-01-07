@@ -18,6 +18,7 @@ public:
     std::unique_ptr<AggServer::PortLifecycleResponse> GetPortLifecycle(const AggServer::PortLifecycleRequest& request);
     std::unique_ptr<AggServer::WorkloadResponse> GetWorkload(const AggServer::WorkloadRequest& request);
     std::unique_ptr<AggServer::CPUUtilisationResponse> GetCPUUtilisation(const AggServer::CPUUtilisationRequest& request);
+    std::unique_ptr<AggServer::MemoryUtilisationResponse> GetMemoryUtilisation(const AggServer::MemoryUtilisationRequest& request);
 
 private:
     zmq::ProtoRequester requester_;
