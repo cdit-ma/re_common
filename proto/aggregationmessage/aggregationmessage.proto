@@ -83,7 +83,8 @@ message WorkloadEvent {
         FINISHED = 1;
         MESSAGE = 2;
         WARNING = 3;
-	    ERROR_EVENT = 4;
+        ERROR_EVENT = 4;
+        MARKER = 5;
     }
 
     WorkerInstance worker_inst = 1;
