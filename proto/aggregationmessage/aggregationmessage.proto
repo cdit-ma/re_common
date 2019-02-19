@@ -29,6 +29,8 @@ message PortLifecycleRequest {
     repeated string component_instance_paths = 3; // filter results by expected
     repeated string component_names = 4;
     uint32 experiment_run_id = 5;
+    repeated string port_ids = 6;
+    repeated string component_instance_ids = 7;
 
 }
 message PortLifecycleResponse {
@@ -42,6 +44,8 @@ message WorkloadRequest {
     repeated string component_instance_paths = 3; // filter results by expected
     repeated string component_names = 4;
     uint32 experiment_run_id = 5;
+    repeated string worker_instance_ids = 6;
+    repeated string component_instance_ids = 7;
 
 }
 message WorkloadResponse {
@@ -53,6 +57,7 @@ message CPUUtilisationRequest {
     repeated google.protobuf.Timestamp time_interval = 1;
     repeated string node_ids = 2;
     uint32 experiment_run_id = 3;
+    repeated string node_hostnames = 4;
 }
 message CPUUtilisationResponse {
     //repeated CPUUtilisationEvent events = 1;
@@ -63,6 +68,7 @@ message MemoryUtilisationRequest {
     repeated google.protobuf.Timestamp time_interval = 1;
     repeated string node_ids = 2;
     uint32 experiment_run_id = 3;
+    repeated string node_hostnames = 4;
 }
 message MemoryUtilisationResponse {
     //repeated CPUUtilisationEvent events = 1;
