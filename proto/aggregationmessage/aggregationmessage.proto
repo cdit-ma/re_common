@@ -20,6 +20,7 @@ message ExperimentStateResponse {
     repeated Node nodes = 2;
     repeated Component components = 3;
     repeated Worker workers = 4;
+    google.protobuf.Timestamp last_updated = 5;
 
 }
 
