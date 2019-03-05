@@ -76,6 +76,17 @@ message MemoryUtilisationResponse {
     repeated MemoryUtilisationNode nodes = 2;
 }
 
+message MarkerRequest {
+    repeated google.protobuf.Timestamp time_interval = 1;
+    uint32 experiment_run_id = 2;
+    repeated string component_names = 3;
+    repeated string worker_instance_ids = 4;
+    repeated string component_instance_ids = 5;
+}
+message MarkerResponse {
+    repeated MarkerNameSet marker_name_sets = 1;
+}
+
 ///Event messages
 message PortLifecycleEvent {
     
@@ -122,6 +133,19 @@ message MemoryUtilisationEvent {
     //Node node = 1;
     double memory_utilisation = 2;
     google.protobuf.Timestamp time = 3;
+}
+
+message MarkerNameSet {
+    string name = 1;
+    repeated MarkerIDSet marker_id_set = 2;
+}
+message MarkerIDSet {
+    int64 id = 1;
+    repeated MarkerEvent events = 2;
+}
+message MarkerEvent {
+    google.protobuf.Timestamp timestamp = 1;
+    ComponentInstance component_instance = 2;
 }
 
 /// Event enums
