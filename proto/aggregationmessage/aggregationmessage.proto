@@ -82,6 +82,8 @@ message MarkerRequest {
     repeated string component_names = 3;
     repeated string worker_instance_ids = 4;
     repeated string component_instance_ids = 5;
+    repeated string worker_instance_paths = 6;
+    repeated string component_instance_paths = 7;
 }
 message MarkerResponse {
     repeated MarkerNameSet marker_name_sets = 1;
