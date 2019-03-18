@@ -19,6 +19,7 @@ public:
     std::unique_ptr<AggServer::WorkloadResponse> GetWorkload(const AggServer::WorkloadRequest& request);
     std::unique_ptr<AggServer::CPUUtilisationResponse> GetCPUUtilisation(const AggServer::CPUUtilisationRequest& request);
     std::unique_ptr<AggServer::MemoryUtilisationResponse> GetMemoryUtilisation(const AggServer::MemoryUtilisationRequest& request);
+    std::unique_ptr<AggServer::MarkerResponse> GetMarkers(const AggServer::MarkerRequest& request);
 
 private:
     zmq::ProtoRequester requester_;

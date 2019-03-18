@@ -117,3 +117,21 @@ std::unique_ptr<AggServer::MemoryUtilisationResponse> AggServer::Requester::GetM
         throw std::runtime_error(ex.what());
     }
 }
+
+
+/**
+ * @brief AggServer::Requester::GetMarkers
+ * @param request
+ * @return
+ */
+std::unique_ptr<AggServer::MarkerResponse> AggServer::Requester::GetMarkers(const AggServer::MarkerRequest &request)
+{
+    auto reply = requester_.SendRequest<MarkerRequest, MarkerResponse>("GetMarkers", request, 5000);
+    try{
+        return std::move(reply.get());
+    }catch(const zmq::RMIException& ex){
+        throw std::invalid_argument(ex.what());
+    }catch(const zmq::TimeoutException& ex){
+        throw std::runtime_error(ex.what());
+    }
+}
