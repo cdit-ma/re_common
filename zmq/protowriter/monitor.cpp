@@ -51,6 +51,7 @@ void zmq::Monitor::MonitorThread_(std::reference_wrapper<zmq::socket_t> socket, 
 
         std::cerr << "MONITORING BOIS" << std::endl;
         while(check_event(-1)){
+            std::cerr << "GOT EVENTS" << std::endl;
 
         }
     }catch(const zmq::error_t& ex){
