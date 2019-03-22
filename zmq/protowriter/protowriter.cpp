@@ -44,11 +44,11 @@ zmq::ProtoWriter::~ProtoWriter(){
     std::cout << "* zmq::ProtoWriter: Wrote "  << GetTxCount() << " messages." << std::endl;
 }
 
-void zmq::ProtoWriter::AttachMonitor(std::unique_ptr<zmq::Monitor> monitor, const int event_type){
-    monitor->MonitorThread(*socket_, event_type);
-    //monitor_futures_.emplace_back(std::async(std::launch::async, &Monitor::MonitorThread, monitor.get(), std::ref(*socket_), event_type));
-    monitors_.emplace_back(std::move(monitor));
-    std::cerr << this << ":  ATTACHED MONITOR: " << monitors_.size() << std::endl;
+void zmq::ProtoWriter::RegisterMonitorCallback(const uint8_t& event, std::function<void(int, std::string)> fn){
+    if(!monitor_){
+        monitor_ = std::unique_ptr<zmq::Monitor>(new zmq::Monitor(*socket_));
+    }
+    monitor_->RegisterEventCallback(event, fn);
 }
 
 bool zmq::ProtoWriter::BindPublisherSocket(const std::string& endpoint){
@@ -146,9 +146,7 @@ void zmq::ProtoWriter::Terminate(){
         std::cout << "* Sleeping for: " << sleep_ms.count() << " ms to free backpressure on ProtoWriter." << std::endl;
         std::this_thread::sleep_for(sleep_us);
     }
-    //Remove monitors
-    monitors_.clear();
+    monitor_.reset();
     socket_.reset();
-    //Teardown context
     context_.reset();
 }

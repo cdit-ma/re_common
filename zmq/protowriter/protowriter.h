@@ -38,6 +38,8 @@ namespace zmq{
 
             int GetTxCount();
             
+            void RegisterMonitorCallback(const uint8_t& event, std::function<void(int, std::string)> fn);
+
             void AttachMonitor(std::unique_ptr<zmq::Monitor> monitor, const int event_type);
             bool BindPublisherSocket(const std::string& endpoint);
 
@@ -54,11 +56,11 @@ namespace zmq{
             std::chrono::steady_clock::time_point backpressure_update_time_;
             const std::chrono::microseconds message_process_delay_;
 
+            std::mutex mutex_;
             std::unique_ptr<zmq::socket_t> socket_;
             std::unique_ptr<zmq::context_t> context_;
+            std::unique_ptr<zmq::Monitor> monitor_;
             
-            std::vector< std::unique_ptr<zmq::Monitor> >  monitors_;
-            std::mutex mutex_;
     };
 };
 

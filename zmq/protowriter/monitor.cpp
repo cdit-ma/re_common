@@ -22,37 +22,34 @@
 #include <iostream>
 #include <functional>
 
-void zmq::Monitor::RegisterEventCallback(std::function<void(int, std::string)> fn){
-    callback_ = fn;
+zmq::Monitor::Monitor(zmq::socket_t& socket){
+    future_ = std::async(std::launch::async, &Monitor::MonitorThread, this, std::ref(socket), ZMQ_EVENT_ALL);
 }
 
 zmq::Monitor::~Monitor(){
-    std::cerr << "abort" << std::endl;
-    abort();
-    std::cerr << "abortd" << std::endl;
+    abort_ = true;
+    
     if(future_.valid()){
-        std::cerr << "future_.get();" << std::endl;
         future_.get();
-        std::cerr << "abofuture_.ged();rt" << std::endl;
     }
 }
 
-void zmq::Monitor::MonitorThread(zmq::socket_t& socket, const int event_type){
-    future_ = std::async(std::launch::async, &Monitor::MonitorThread_, this, std::ref(socket), event_type);
+
+void zmq::Monitor::RegisterEventCallback(const uint8_t& event, std::function<void(int, std::string)> fn){
+    std::lock_guard<std::mutex> lock(callback_mutex_);
+    callbacks_[event] = fn;
 }
 
-void zmq::Monitor::MonitorThread_(std::reference_wrapper<zmq::socket_t> socket, const int event_type){
+void zmq::Monitor::MonitorThread(std::reference_wrapper<zmq::socket_t> socket, const int event_type){
     static std::atomic<int> monitor_count{0};
     
     try{
         std::string monitor_address{"inproc://monitor_" + std::to_string(monitor_count++)};
         
         init(socket.get(), monitor_address.c_str());
-
-        std::cerr << "MONITORING BOIS" << std::endl;
-        while(check_event(-1)){
-            std::cerr << "GOT EVENTS" << std::endl;
-
+        
+        while(!abort_){
+            check_event(1000);
         }
     }catch(const zmq::error_t& ex){
         std::cerr << "MonitorThread: " << ex.what() << std::endl;
@@ -60,9 +57,10 @@ void zmq::Monitor::MonitorThread_(std::reference_wrapper<zmq::socket_t> socket, 
 }
 
 void zmq::Monitor::on_event(const zmq_event_t &event, const char* addr){
-    std::cerr << addr << std::endl;
-    if(callback_){
-        callback_(event.event, std::string(addr));
+    std::lock_guard<std::mutex> lock(callback_mutex_);
+    auto location = callbacks_.find(event.event);
+    if(location != callbacks_.cend()){
+        location->second(event.event, std::string(addr));
     }
 }
 
