@@ -147,10 +147,33 @@ void zmq::ProtoWriter::Terminate(){
     }
 
     //Teardown socket
+    std::cout << "* Resetting Socket" << std::endl;
     socket_.reset();
+    std::cout << "* Reset Socket" << std::endl;
 
+    std::cout << "* Resetting Monitors" << std::endl;
     //Remove monitors
     monitors_.clear();
+    std::cout << "* Reset Monitors" << std::endl;
+
+    std::cout << "* Resetting Monitors Futures" << std::endl;
+    for(auto& future : monitor_futures_){
+        try{
+            if(future.valid()){
+                future.get();
+            }
+        }catch(const std::exception& ex){
+            std::cerr << ex.what() << std::endl;
+        }
+    }
+    std::cout << "* Reset Monitors Futures" << std::endl;
+    
+    std::cout << "* Monitors Futures Clear" << std::endl;
+    monitor_futures_.clear();
+    std::cout << "* Monitors Futures Cleared" << std::endl;
+    
+    std::cout << "* Resetting Context" << std::endl;
     //Teardown context
     context_.reset();
+    std::cout << "* Reset Context" << std::endl;
 }
