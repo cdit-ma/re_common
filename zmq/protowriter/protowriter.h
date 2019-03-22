@@ -23,20 +23,20 @@
 
 #include <string>
 #include <mutex>
+#include <atomic>
+#include <cstdint>
+
 #include <google/protobuf/message_lite.h>
 #include <zmq.hpp>
-#include <future>
-#include <vector>
 
 #include "monitor.h"
-
 namespace zmq{
     class ProtoWriter{
         public:
             ProtoWriter();
             virtual ~ProtoWriter();
 
-            int GetTxCount();
+            uint64_t GetTxCount() const;
             
             void RegisterMonitorCallback(const uint8_t& event, std::function<void(int, std::string)> fn);
 
@@ -51,8 +51,9 @@ namespace zmq{
             bool PushString(const std::string& topic, const std::string& message_type, const std::string& message);
         private:
             void UpdateBackpressure(bool increment);
-            int64_t tx_count_ = 0;
-            int64_t backpressure_ = 0;
+
+            std::atomic<uint64_t> tx_count_{0};
+            std::atomic<int64_t> backpressure_{0};
             std::chrono::steady_clock::time_point backpressure_update_time_;
             const std::chrono::microseconds message_process_delay_;
 
