@@ -27,19 +27,13 @@ void zmq::Monitor::RegisterEventCallback(std::function<void(int, std::string)> f
 }
 
 void zmq::Monitor::MonitorThread(std::reference_wrapper<zmq::socket_t> socket, const int event_type){
-    static std::mutex mutex;
-    static int monitor_count = 0;
-
-    std::string monitor_address;
-    {
-        std::lock_guard<std::mutex> lock(mutex);
-        monitor_address = "inproc://monitor_" + std::to_string(monitor_count++);
-    }
-
+    static std::atomic<int> monitor_count{0};
+    
     try{
+        std::string monitor_address{"inproc://monitor_" + std::to_string(monitor_count++)};
         monitor(socket.get(), monitor_address.c_str(), event_type);
     }catch(const zmq::error_t& ex){
-        ex.what();
+        std::cerr << "MonitorThread: " << ex.what() << std::endl;
     }
 }
 
