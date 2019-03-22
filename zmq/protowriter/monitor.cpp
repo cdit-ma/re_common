@@ -20,24 +20,46 @@
  
 #include "monitor.h"
 #include <iostream>
-#include <mutex>
+#include <functional>
 
 void zmq::Monitor::RegisterEventCallback(std::function<void(int, std::string)> fn){
     callback_ = fn;
 }
 
-void zmq::Monitor::MonitorThread(std::reference_wrapper<zmq::socket_t> socket, const int event_type){
+zmq::Monitor::~Monitor(){
+    std::cerr << "abort" << std::endl;
+    abort();
+    std::cerr << "abortd" << std::endl;
+    if(future_.valid()){
+        std::cerr << "future_.get();" << std::endl;
+        future_.get();
+        std::cerr << "abofuture_.ged();rt" << std::endl;
+    }
+}
+
+void zmq::Monitor::MonitorThread(zmq::socket_t& socket, const int event_type){
+    future_ = std::async(std::launch::async, &Monitor::MonitorThread_, this, std::ref(socket), event_type);
+}
+
+void zmq::Monitor::MonitorThread_(std::reference_wrapper<zmq::socket_t> socket, const int event_type){
     static std::atomic<int> monitor_count{0};
     
     try{
         std::string monitor_address{"inproc://monitor_" + std::to_string(monitor_count++)};
-        monitor(socket.get(), monitor_address.c_str(), event_type);
+        
+        init(socket.get(), monitor_address.c_str());
+
+        std::cerr << "MONITORING BOIS" << std::endl;
+        while(check_event(-1)){
+
+        }
     }catch(const zmq::error_t& ex){
         std::cerr << "MonitorThread: " << ex.what() << std::endl;
     }
 }
 
 void zmq::Monitor::on_event(const zmq_event_t &event, const char* addr){
+    std::cerr << addr << std::endl;
     if(callback_){
         callback_(event.event, std::string(addr));
     }

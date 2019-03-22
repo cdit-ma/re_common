@@ -45,9 +45,10 @@ zmq::ProtoWriter::~ProtoWriter(){
 }
 
 void zmq::ProtoWriter::AttachMonitor(std::unique_ptr<zmq::Monitor> monitor, const int event_type){
-    std::unique_lock<std::mutex> lock(mutex_);
-    monitor_futures_.emplace_back(std::async(std::launch::async, &Monitor::MonitorThread, monitor.get(), std::ref(*socket_), event_type));
+    monitor->MonitorThread(*socket_, event_type);
+    //monitor_futures_.emplace_back(std::async(std::launch::async, &Monitor::MonitorThread, monitor.get(), std::ref(*socket_), event_type));
     monitors_.emplace_back(std::move(monitor));
+    std::cerr << this << ":  ATTACHED MONITOR: " << monitors_.size() << std::endl;
 }
 
 bool zmq::ProtoWriter::BindPublisherSocket(const std::string& endpoint){
@@ -145,35 +146,9 @@ void zmq::ProtoWriter::Terminate(){
         std::cout << "* Sleeping for: " << sleep_ms.count() << " ms to free backpressure on ProtoWriter." << std::endl;
         std::this_thread::sleep_for(sleep_us);
     }
-
-    //Teardown socket
-    std::cout << "* Resetting Socket" << std::endl;
-    socket_.reset();
-    std::cout << "* Reset Socket" << std::endl;
-
-    std::cout << "* Resetting Monitors" << std::endl;
     //Remove monitors
     monitors_.clear();
-    std::cout << "* Reset Monitors" << std::endl;
-
-    std::cout << "* Resetting Monitors Futures" << std::endl;
-    for(auto& future : monitor_futures_){
-        try{
-            if(future.valid()){
-                future.get();
-            }
-        }catch(const std::exception& ex){
-            std::cerr << ex.what() << std::endl;
-        }
-    }
-    std::cout << "* Reset Monitors Futures" << std::endl;
-    
-    std::cout << "* Monitors Futures Clear" << std::endl;
-    monitor_futures_.clear();
-    std::cout << "* Monitors Futures Cleared" << std::endl;
-    
-    std::cout << "* Resetting Context" << std::endl;
+    socket_.reset();
     //Teardown context
     context_.reset();
-    std::cout << "* Reset Context" << std::endl;
 }
