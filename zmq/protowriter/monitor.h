@@ -35,7 +35,11 @@ namespace zmq{
         public:
             Monitor(zmq::socket_t& socket);
             ~Monitor();
+<<<<<<< HEAD
             void RegisterEventCallback(const uint8_t& event_type, EventCallbackFn fn);
+=======
+            void RegisterEventCallback(const uint8_t& event_type, std::function<void(int, std::string)> fn);
+>>>>>>> develop
         private:
             void MonitorThread(std::reference_wrapper<zmq::socket_t> socket, const int event_type);
             
@@ -55,7 +59,11 @@ namespace zmq{
             void on_event_unknown(const zmq_event_t &event, const char* addr);
 
             std::mutex callback_mutex_;
+<<<<<<< HEAD
             std::unordered_map< uint8_t, EventCallbackFn > callbacks_;
+=======
+            std::unordered_map< uint8_t, std::function<void(int, std::string)> > callbacks_;
+>>>>>>> develop
             
             std::future<void> future_;
             std::atomic_bool abort_{false};
