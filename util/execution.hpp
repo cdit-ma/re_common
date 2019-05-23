@@ -32,6 +32,7 @@ public:
                 func();
             } catch (const std::exception& ex) {
                 error_messages << ex.what() << std::endl;
+                std::cerr << ex.what() << std::endl;
             }
         }
         if(!error_messages.str().empty()) {
@@ -42,7 +43,7 @@ public:
     void AddTerminateCallback(const std::function<void()>& callback_func)
     {
         std::unique_lock<std::mutex> lock(mutex_);
-        terminate_functions_.push_back(callback_func);
+        terminate_functions_.emplace_back(callback_func);
     }
 
     void Interrupt()
