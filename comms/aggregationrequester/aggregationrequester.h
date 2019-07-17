@@ -4,7 +4,14 @@
 #include <string>
 #include <memory>
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
 #include <proto/aggregationmessage/aggregationmessage.pb.h>
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 #include <zmq/protorequester/protorequester.hpp>
 
 namespace AggServer
