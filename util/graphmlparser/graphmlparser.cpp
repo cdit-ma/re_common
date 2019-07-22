@@ -3,11 +3,11 @@
 
 #include <iostream>
 
-GraphmlParser::GraphmlParser(const std::string& filename) : GraphmlParserInt(filename){
-    auto result = doc.load_file(filename.c_str());
+GraphmlParser::GraphmlParser(std::istream& model_stream) : GraphmlParserInt(model_stream){
+    auto result = doc.load(model_stream);
     legal_parse = result.status == pugi::status_ok;;
     if(!legal_parse){
-        throw std::runtime_error("GraphmlParser:Parse(" + filename + ") Error: " + result.description());
+        throw std::runtime_error(std::string("GraphmlParser:PugiXML Error: ") + result.description());
     }
 
     //Pre fill attribute map
@@ -25,18 +25,35 @@ GraphmlParser::GraphmlParser(const std::string& filename) : GraphmlParserInt(fil
     }
 }
 
-std::vector<std::string> GraphmlParser::FindNodes(const std::string& kind, const std::string& parent_id){
+std::vector<std::string> GraphmlParser::FindNodesOfKind(const std::string& kind, const std::string& parent_id){
+    return FindNodesOfKinds({kind}, parent_id);
+}
+
+std::vector<std::string> GraphmlParser::FindNodesOfKinds(const std::vector<std::string>& kinds, const std::string& parent_id){
+    std::vector<std::string> out;
     auto search_node = doc.document_element();
 
     if(parent_id.length() > 0 && id_lookup_.count(parent_id)){
         search_node = id_lookup_[parent_id];
     }
-    //Infinite depth
-    std::string search = ".//node/data[@key='" + attribute_map_["kind"] + "' and .='" + kind +"']/..";
-    std::vector<std::string> out;
+    
+    const auto& kinds_size = kinds.size();
+    if(kinds_size > 0){
+        std::string kind_str = "(";
+        for(int i = 0; i < kinds_size; i++){
+            kind_str += ".= '" + kinds[i] + "'";
+            if(i + 1 != kinds_size){
+                kind_str += " or ";
+            }
+        }
+        kind_str += ")";
 
-    for(auto& n : search_node.select_nodes(search.c_str())){
-        out.emplace_back(n.node().attribute("id").value());
+        //Infinite depth
+        std::string search = ".//node/data[@key='" + attribute_map_["kind"] + "' and " + kind_str + "]/..";
+
+        for(auto& n : search_node.select_nodes(search.c_str())){
+            out.push_back(n.node().attribute("id").value());
+        }
     }
     return out;
 }
