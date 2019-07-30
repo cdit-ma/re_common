@@ -30,7 +30,7 @@ target_sources(${EXECUTION_PARSER_LIB} PRIVATE
 target_compile_features(${EXECUTION_PARSER_LIB} PRIVATE cxx_std_11)
 
 #Windows debug builds pugixml libraries from source due to using HEADER_ONLY_MODE
-# as a workaround for windows debug library file prefixes prving to be troublesome
+# as a workaround for windows debug library file prefixes proving to be troublesome
 # relevant tickets: RE-486, MED-709
 if(WIN32 AND CMAKE_BUILD_TYPE MATCHES "Debug")
     set(PUGIXML_SRC $ENV{PUGIXML_SRC})
