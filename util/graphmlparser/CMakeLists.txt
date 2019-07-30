@@ -40,7 +40,7 @@ if(WIN32 AND CMAKE_BUILD_TYPE MATCHES "Debug")
     endif()
     target_compile_definitions(${EXECUTION_PARSER_LIB} PUBLIC PUGIXML_HEADER_ONLY)
     target_include_directories(${EXECUTION_PARSER_LIB} PRIVATE ${PUGIXML_SRC}/src)
-elseif()
+else()
     target_include_directories(${EXECUTION_PARSER_LIB} PRIVATE ${PUGIXML_ROOT}/include)
 endif()
 
