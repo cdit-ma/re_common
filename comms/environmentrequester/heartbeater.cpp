@@ -20,7 +20,8 @@ void Heartbeater::HeartbeatLoop(){
         {
             std::unique_lock<std::mutex> lock(heartbeat_lock_);
             // Wait for a message on the queue OR our heartbeat period to time out.
-            heartbeat_cv_.wait_for(lock, std::chrono::milliseconds(heartbeat_period_), [this]{return end_flag_;});
+	    auto heartbeat_timeout = std::chrono::milliseconds(20000);
+            heartbeat_cv_.wait_for(lock, heartbeat_timeout, [this]{return end_flag_;});
             if(end_flag_){
                 shutdown = true;
             }

@@ -11,7 +11,7 @@ EnvironmentRequest::TryRegisterNodeManager(const std::string& environment_manage
         const std::string& node_ip_address,
         const std::string& container_id)
 {
-    const int retry_ms = 1000;
+    const int retry_ms = 20000;
     NodeManager::NodeManagerRegistrationRequest request;
 
     request.mutable_id()->set_experiment_name(experiment_name);
@@ -44,7 +44,7 @@ EnvironmentRequest::TryRegisterNodeManager(const std::string& environment_manage
 
 std::unique_ptr<NodeManager::LoganRegistrationReply>
 EnvironmentRequest::TryRegisterLoganServer(const std::string& environment_manager_endpoint, const std::string& experiment_name, const std::string& node_ip_address) {
-    const int retry_ms = 1000;
+    const int retry_ms = 20000;
     NodeManager::LoganRegistrationRequest request;
 
     request.mutable_id()->set_experiment_name(experiment_name);
@@ -104,13 +104,13 @@ void EnvironmentRequest::HeartbeatRequester::SetTimeoutCallback(std::function<vo
 
 void EnvironmentRequest::HeartbeatRequester::RemoveDeployment() {
     NodeManager::NodeManagerDeregistrationRequest request;
-    auto reply_future = requester_->SendRequest<NodeManager::NodeManagerDeregistrationRequest, NodeManager::NodeManagerDeregistrationReply>("NodeManagerDeregisteration", request, 1000);
+    auto reply_future = requester_->SendRequest<NodeManager::NodeManagerDeregistrationRequest, NodeManager::NodeManagerDeregistrationReply>("NodeManagerDeregisteration", request, 20000);
     reply_future.get();
 }
 
 std::unique_ptr<NodeManager::EnvironmentMessage> EnvironmentRequest::HeartbeatRequester::GetExperimentInfo() {
     NodeManager::EnvironmentMessage request;
     request.set_type(NodeManager::EnvironmentMessage::GET_EXPERIMENT_INFO);
-    auto reply_future = requester_->SendRequest<NodeManager::EnvironmentMessage, NodeManager::EnvironmentMessage>("GetExperimentInfo", request, 1000);
+    auto reply_future = requester_->SendRequest<NodeManager::EnvironmentMessage, NodeManager::EnvironmentMessage>("GetExperimentInfo", request, 20000);
     return reply_future.get();
 }
